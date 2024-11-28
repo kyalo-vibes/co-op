@@ -1,0 +1,12 @@
+# Ignore Maven wrapper files
+.mvn/
+mvnw
+mvnw.cmd
+
+# Ignore target directory (compiled JAR files are copied after build)
+
+# Ignore IDE and system files
+.idea/
+*.iml
+*.swp
+*.log
