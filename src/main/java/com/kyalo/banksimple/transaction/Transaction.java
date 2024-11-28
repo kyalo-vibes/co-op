@@ -28,8 +28,8 @@ public class Transaction {
     @JoinColumn(name = "account_id", nullable = false)
     private Account account;
 
-    @Column(name = "type", nullable = false)
-    private String type;
+    @Column(name = "transaction_type", nullable = false)
+    private String transactionType;
 
     @Column(name = "amount", nullable = false)
     private BigDecimal amount;

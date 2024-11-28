@@ -30,4 +30,14 @@ public class AccountController {
 
     @PostMapping("/{id}/withdraw")
     public ResponseEntity<AccountResponseDTO> withdraw(@PathVariable Long id, @Valid @RequestBody TransactionRequestDTO transactionRequestDTO) { return ResponseEntity.ok(accountService.withdraw(id, transactionRequestDTO.amount())); }
+
+    // Transfer endpoint
+    @PostMapping("/{sourceAccountId}/transfer/{targetAccountId}")
+    public ResponseEntity<AccountResponseDTO> transfer(
+            @PathVariable Long sourceAccountId,
+            @PathVariable Long targetAccountId,
+            @Valid @RequestBody TransactionRequestDTO transactionRequestDTO) {
+        AccountResponseDTO accountResponseDTO = accountService.transfer(sourceAccountId, targetAccountId, transactionRequestDTO.amount());
+        return ResponseEntity.ok(accountResponseDTO);
+    }
 }
