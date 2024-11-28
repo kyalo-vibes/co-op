@@ -43,3 +43,10 @@ docker-compose up -d
 This will start your application in the background and map port 8080 on your local machine to port 8080 in the container. You can then access the API documentation at `http://localhost:8080/swagger-ui.html`.
 
 Please note that you need to have Docker and Docker Compose installed on your machine to run this command.
+
+# Application Authentication Details
+
+To authenticate and access the protected endpoints of the application, please use the following credentials:
+
+- **Username**: `john_doe`
+- **Password**: `password`
