@@ -1,5 +1,5 @@
 -- Create the User table
-CREATE TABLE "user" (
+CREATE TABLE "app_user" (
                         id SERIAL PRIMARY KEY,                  -- Unique user identifier
                         username VARCHAR(255) UNIQUE NOT NULL,   -- Username (e.g., for login)
                         password_hash VARCHAR(255) NOT NULL,     -- Hashed password for security
@@ -16,7 +16,7 @@ CREATE TABLE account (
                          balance DECIMAL(15, 2) NOT NULL,              -- Current account balance
                          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- Record creation timestamp
                          modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Last modification timestamp
-                         FOREIGN KEY (user_id) REFERENCES "user" (id) ON DELETE CASCADE  -- Foreign key to User table
+                         FOREIGN KEY (user_id) REFERENCES "app_user" (id) ON DELETE CASCADE  -- Foreign key to User table
 );
 
 -- Create the Transaction table
