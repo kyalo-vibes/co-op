@@ -10,11 +10,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.logging.Logger;
+
 import jakarta.validation.Valid;
 
 
 @Service
 public class AccountService {
+    private static final Logger logger = Logger.getLogger(AccountService.class.getName());
     private final AccountRepository accountRepository;
     private final TransactionRepository transactionRepository;
 
@@ -27,26 +30,35 @@ public class AccountService {
     public List<Account> getAccounts() {
         List<Account> accounts = accountRepository.findAll();
         if (accounts.isEmpty()) {
+            logger.warning("No accounts found");
             throw new ResourceNotFoundException("No accounts found");
         }
+        logger.fine("Accounts fetched successfully: " + accounts.size());
         return accounts;
     }
 
     @Transactional
     public Account getAccountById(Long id) {
-        return accountRepository.findById(id).orElseThrow(() ->
-                new ResourceNotFoundException("Account not found with id: " + id));
+        return accountRepository.findById(id).orElseThrow(() -> {
+            logger.severe("Account not found with id: " + id);
+            return new ResourceNotFoundException("Account not found with id: " + id);
+        });
+
     }
 
     @Transactional
     public AccountResponseDTO deposit(Long id, BigDecimal amount) {
         if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+            logger.warning("Deposit amount must be positive: " + amount);
             throw new BadRequestException("Deposit amount must be positive");
         }
 
         // Find the account
-        Account account = accountRepository.findById(id).orElseThrow(() ->
-                new ResourceNotFoundException("Account not found with id: " + id));
+        Account account = accountRepository.findById(id).orElseThrow(() -> {
+            logger.severe("Account not found with id: " + id);
+            return new ResourceNotFoundException("Account not found with id: " + id);
+        });
+
 
         // Update account balance
         account.setBalance(account.getBalance().add(amount));
@@ -62,19 +74,25 @@ public class AccountService {
         transactionRepository.save(transaction);
 
         // Return updated account response
+        logger.fine("Deposit successful. Updated balance: " + updatedAccount.getBalance());
         return new AccountResponseDTO(updatedAccount.getId(), updatedAccount.getAccountHolder(), updatedAccount.getBalance());
     }
 
     @Transactional
     public AccountResponseDTO withdraw(Long id, BigDecimal amount) {
         if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+            logger.warning("Withdrawal amount must be positive: " + amount);
             throw new BadRequestException("Withdrawal amount must be positive");
         }
 
-        Account account = accountRepository.findById(id).orElseThrow(() ->
-                new ResourceNotFoundException("Account not found with id: " + id));
+        Account account = accountRepository.findById(id).orElseThrow(() -> {
+            logger.severe("Account not found with id: " + id);
+            return new ResourceNotFoundException("Account not found with id: " + id);
+        });
+
 
         if (account.getBalance().subtract(amount).compareTo(BigDecimal.ZERO) < 0) {
+            logger.warning("Insufficient balance for withdrawal. Current balance: " + account.getBalance() + ", requested amount: " + amount);
             throw new InsufficientBalanceException("Insufficient balance for withdrawal");
         }
 
@@ -87,6 +105,7 @@ public class AccountService {
     @Transactional
     public AccountResponseDTO createAccount(@Valid AccountRequestDTO accountRequestDTO) {
         if (accountRequestDTO.initialBalance().compareTo(BigDecimal.ZERO) < 0) {
+            logger.warning("Initial balance must be non-negative: " + accountRequestDTO.initialBalance());
             throw new BadRequestException("Initial balance must be non-negative");
         }
 
@@ -95,25 +114,34 @@ public class AccountService {
         account.setBalance(accountRequestDTO.initialBalance());
 
         Account savedAccount = accountRepository.save(account);
+        logger.fine("Account created successfully with ID: " + savedAccount.getId());
         return new AccountResponseDTO(savedAccount.getId(), savedAccount.getAccountHolder(), savedAccount.getBalance());
     }
 
     @Transactional
     public AccountResponseDTO transfer(Long sourceAccountId, Long targetAccountId, BigDecimal amount) {
         if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+            logger.warning("Transfer amount must be positive: " + amount);
             throw new BadRequestException("Transfer amount must be positive");
         }
 
         // Find the source account
-        Account sourceAccount = accountRepository.findById(sourceAccountId).orElseThrow(() ->
-                new ResourceNotFoundException("Source account not found with id: " + sourceAccountId));
+        Account sourceAccount = accountRepository.findById(sourceAccountId).orElseThrow(() -> {
+            logger.severe("Source account not found with id: " + sourceAccountId);
+            return new ResourceNotFoundException("Source account not found with id: " + sourceAccountId);
+        });
+
 
         // Find the target account
-        Account targetAccount = accountRepository.findById(targetAccountId).orElseThrow(() ->
-                new ResourceNotFoundException("Target account not found with id: " + targetAccountId));
+        Account targetAccount = accountRepository.findById(targetAccountId).orElseThrow(() -> {
+            logger.severe("Target account not found with id: " + targetAccountId);
+            return new ResourceNotFoundException("Target account not found with id: " + targetAccountId);
+        });
+
 
         // Ensure the source account has sufficient balance
         if (sourceAccount.getBalance().subtract(amount).compareTo(BigDecimal.ZERO) < 0) {
+            logger.warning("Insufficient balance for transfer. Source account balance: " + sourceAccount.getBalance() + ", requested amount: " + amount);
             throw new InsufficientBalanceException("Insufficient balance for the transfer");
         }
 
@@ -140,6 +168,7 @@ public class AccountService {
         transactionRepository.save(depositTransaction);
 
         // Return updated account response for the source account (or both if needed)
+        logger.fine("Transfer successful. Source account balance: " + sourceAccount.getBalance() + ", target account balance: " + targetAccount.getBalance());
         return new AccountResponseDTO(sourceAccount.getId(), sourceAccount.getAccountHolder(), sourceAccount.getBalance());
     }
 

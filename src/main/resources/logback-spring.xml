@@ -1,0 +1,57 @@
+<configuration>
+
+    <!-- Console logging -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- INFO Level File logging -->
+    <appender name="INFO_FILE" class="ch.qos.logback.core.FileAppender">
+        <file>logs/info.log</file>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} - [INFO] - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- DEBUG Level File logging -->
+    <appender name="DEBUG_FILE" class="ch.qos.logback.core.FileAppender">
+        <file>logs/debug.log</file>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} - [DEBUG] - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- WARNING Level File logging -->
+    <appender name="WARNING_FILE" class="ch.qos.logback.core.FileAppender">
+        <file>logs/warning.log</file>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} - [WARNING] - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- SEVERE Level File logging -->
+    <appender name="SEVERE_FILE" class="ch.qos.logback.core.FileAppender">
+        <file>logs/severe.log</file>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} - [SEVERE] - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Log level configuration for different loggers -->
+    <logger name="com.kyalo.banksimple.account.AccountService" level="DEBUG">
+        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="INFO_FILE" />
+        <appender-ref ref="DEBUG_FILE" />
+        <appender-ref ref="WARNING_FILE" />
+        <appender-ref ref="SEVERE_FILE" />
+    </logger>
+
+    <!-- Root logger configuration (INFO level by default) -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="INFO_FILE" />
+    </root>
+
+</configuration>
